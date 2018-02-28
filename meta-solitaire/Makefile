@@ -13,7 +13,7 @@ export SKETCH_NAME='"""$(INO)"""'
 DEFINES=-DARDUINO=185 -D__arm__ -DSPI_HAS_TRANSACTION -D__SKETCH_NAME__=$(SKETCH_NAME)
 CFLAGS=-std=c++11 $(INC) $(DEFINES) -w -g
 
-META_LIB_DIR=../../Gamebuino-Meta/libraries/Gamebuino-Meta/src/
+META_LIB_DIR=../../Gamebuino-Meta/src/
 
 # arduino tools
 ARDUINO_HARDWARE=-hardware /Applications/Arduino.app/Contents/Java/hardware \
@@ -46,7 +46,7 @@ build/sketch/%.h: %.h
 
 build/sketch/$(INO).cpp: $(INO)
 	$(AB) -preprocess $(AB_ARGS) $(ARDUINO_HARDWARE) $(ARDUINO_TOOLS) $(ARDUINO_LIBS) \
-		$(ARDUINO_BUILT_INS) -fqbn=gamebuino_meta:samd:gamebuino_meta_native -ide-version=10805 \
+		$(ARDUINO_BUILT_INS) -fqbn=gamebuino:samd:gamebuino_meta_native -ide-version=10805 \
 		-build-path ./build -warnings=none -prefs=build.warn_data_percentage=75 $(INO)
 
 META_LIBS = $(META_LIB_DIR)/build/meta.o $(META_LIB_DIR)/stub/core.cpp
@@ -62,5 +62,7 @@ cleanmeta:
 	$(MAKE) -C $(META_LIB_DIR) clean
 
 clean:
+	# we always need to rebuild Gamebuino-Meta.o because of __SKETCH_NAME__
+	rm $(META_LIB_DIR)/build/meta.o $(META_LIB_DIR)/build/Gamebuino-Meta.o
 	rm -rf ./build
 	rm $(BINARY)
